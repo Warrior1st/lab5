@@ -1,4 +1,5 @@
-// SEG 2505 Team
+// SEG 2505
+// Team
 package com.example.firebaseauth;
 
 import android.content.Intent;
