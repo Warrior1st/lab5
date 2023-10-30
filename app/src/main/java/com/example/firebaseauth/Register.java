@@ -18,17 +18,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity implements
         AdapterView.OnItemSelectedListener{
     TextInputEditText editTextEmail,editTextPassword;
     Button buttonReg;
     FirebaseAuth mAuth;
+
+    FirebaseFirestore fStore;
+
     ProgressBar progressBar;
     TextView textView;
     String[] UsersRoles = { "Client", "Employe"};
@@ -51,6 +61,8 @@ public class Register extends AppCompatActivity implements
         setContentView(R.layout.activity_register);
 
         mAuth=FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+
         editTextEmail=findViewById(R.id.email);
         editTextPassword= findViewById(R.id.password);
         buttonReg=findViewById(R.id.btn_register);
@@ -84,22 +96,29 @@ public class Register extends AppCompatActivity implements
                 }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
+                            public void onSuccess(AuthResult authResult) {
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(Register.this, "Account created",
-                                            Toast.LENGTH_SHORT).show();
-                                    Intent intent=new Intent(getApplicationContext(),Login.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(Register.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Register.this, "Account created",
+                                        Toast.LENGTH_SHORT).show();
+                                DocumentReference df = fStore.collection("Users").document(user.getUid());
+                                Map<String, Object> userInfo = new HashMap<>();
+
+                                if(userUserSelected.equals("Client")){
+                                    userInfo.put("isClient", "1");
+                                } else if (userUserSelected.equals("Employe")){
+                                    userInfo.put("isEmploye", "1");
                                 }
+                                df.set(userInfo);
+                                Intent intent = new Intent(getApplicationContext(), Login.class);
+                                startActivity(intent);
+                                finish();
+                            }}).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
                             }
                         });
 

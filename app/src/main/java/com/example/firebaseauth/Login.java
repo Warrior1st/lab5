@@ -13,16 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Login extends AppCompatActivity {
     TextInputEditText editTextEmail,editTextPassword;
     Button buttonLogin;
     FirebaseAuth mAuth;
+
+    FirebaseFirestore fStore;
     ProgressBar progressBar;
     TextView textView;
 
@@ -37,9 +43,9 @@ public class Login extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
+            //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            //startActivity(intent);
+            //finish();
         }
     }
 
@@ -47,6 +53,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mAuth=FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+
         editTextEmail=findViewById(R.id.email);
         editTextPassword= findViewById(R.id.password);
         buttonLogin=findViewById(R.id.btn_login);
@@ -88,20 +96,35 @@ public class Login extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
+                                    FirebaseUser user = mAuth.getCurrentUser();
+
+                                    DocumentReference df = fStore.collection("Users").document(user.getUid());
+
                                     Toast.makeText(getApplicationContext(), "Login Successful", Toast.LENGTH_SHORT).show();
 
-                                    Intent intent = null;
-                                    if (role.equals(Role.ADMIN)) {
-                                        intent = new Intent(getApplicationContext(),MainActivity.class);
-                                    } else if (role.equals(Role.EMPLOYE)) {
-                                        intent = new Intent(getApplicationContext(),MainActivityEmploye.class);
-                                    }else{
-                                        intent = new Intent(getApplicationContext(),MainActivityClient.class);
-                                    }
+                                    df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if(documentSnapshot.getString("isAdmin") != null) {
+                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                                startActivity(intent);
+                                            } else if (documentSnapshot.getString("isEmploye") != null) {
+                                                Intent intent = new Intent(getApplicationContext(),MainActivityEmploye.class);
+                                                startActivity(intent);                                            }
+                                            else {
+                                                Intent intent = new Intent(getApplicationContext(),MainActivityClient.class);
+                                                startActivity(intent);
+                                            }
+                                            finish();
 
-                                    startActivity(intent);
+                                        }
+                                    });
 
-                                    finish();
+
+
+
+
+
 
                                 } else {
                                     // If sign in fails, display a message to the user.
