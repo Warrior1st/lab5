@@ -26,6 +26,12 @@ public class Login extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textView;
 
+    public enum Role {
+        ADMIN,
+        EMPLOYE,
+        CLIENT
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -59,9 +65,12 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);
-                String email, password;
+                String email, password, role;
                 email= String.valueOf(editTextEmail.getText());
                 password=String.valueOf(editTextPassword.getText());
+
+                // role doit prendre la valeur enregistrer sur firebase
+                role = String.valueOf(Role.CLIENT);
 
                 if (TextUtils.isEmpty(email)){
                     Toast.makeText(Login.this, "Enter email", Toast.LENGTH_SHORT).show();
@@ -80,10 +89,19 @@ public class Login extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     Toast.makeText(getApplicationContext(), "Login Successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
 
+                                    Intent intent = null;
+                                    if (role.equals(Role.ADMIN)) {
+                                        intent = new Intent(getApplicationContext(),MainActivity.class);
+                                    } else if (role.equals(Role.EMPLOYE)) {
+                                        intent = new Intent(getApplicationContext(),MainActivityEmploye.class);
+                                    }else{
+                                        intent = new Intent(getApplicationContext(),MainActivityClient.class);
+                                    }
+
+                                    startActivity(intent);
+
+                                    finish();
 
                                 } else {
                                     // If sign in fails, display a message to the user.
