@@ -9,20 +9,24 @@
         tools:context=".MainActivityEmploye">
 
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bienvenu sur la page employer" />
-
-
-    <TextView
-            android:id="@+id/user_details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello World!" />
+    <EditText
+            android:id="@+id/prodId"
+            android:hint="@string/id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    <EditText
+            android:id="@+id/prodName"
+            android:hint="@string/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    <EditText
+            android:id="@+id/prodPrice"
+            android:hint="@string/prix"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <Button
-            android:text="@string/logout"
+            android:text="@string/update"
             android:id="@+id/logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

@@ -8,22 +8,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bienvenu sur la page administration" />
-
-
-    <TextView
-        android:id="@+id/user_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <EditText
+            android:id="@+id/productname"
+            android:hint="@string/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    <EditText
+            android:id="@+id/productprice"
+            android:hint="@string/prix"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <Button
-        android:text="@string/logout"
+        android:text="@string/ajouter"
         android:id="@+id/logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <Button
+            android:text="@string/list"
+            android:id="@+id/btnViewList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
 </LinearLayout>
